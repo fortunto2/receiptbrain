@@ -50,7 +50,9 @@ struct HistoryView: View {
 
                 // Receipt list
                 ForEach(filteredReceipts) { receipt in
-                    ReceiptRow(receipt: receipt)
+                    NavigationLink(destination: ReceiptDetailView(receipt: receipt)) {
+                        ReceiptRow(receipt: receipt)
+                    }
                 }
                 .onDelete(perform: deleteReceipts)
             }
@@ -77,11 +79,22 @@ struct ReceiptRow: View {
     let receipt: Receipt
 
     var body: some View {
-        HStack {
-            Image(systemName: receipt.category.icon)
-                .font(.title2)
-                .foregroundStyle(.blue)
-                .frame(width: 40)
+        HStack(spacing: 12) {
+            // Thumbnail or category icon
+            if let imageData = receipt.imageData,
+               let uiImage = UIImage(data: imageData)
+            {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 44, height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                Image(systemName: receipt.category.icon)
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                    .frame(width: 44, height: 44)
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(receipt.merchantName)

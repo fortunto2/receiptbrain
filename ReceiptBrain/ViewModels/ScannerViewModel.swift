@@ -3,6 +3,7 @@ import SwiftData
 import PhotosUI
 
 // AICODE-NOTE: ViewModel uses typed pipeline: UIImage → OCRResult → ParsedReceipt → Receipt. No raw strings.
+@MainActor
 @Observable
 final class ScannerViewModel {
     var selectedPhoto: PhotosPickerItem?
@@ -20,6 +21,7 @@ final class ScannerViewModel {
 
     private let visionService = VisionService()
     private let parser = ReceiptParser()
+    private let photoLibrary = PhotoLibraryService.shared
 
     func processImage(_ image: UIImage) async {
         isProcessing = true
@@ -31,28 +33,22 @@ final class ScannerViewModel {
             let ocrResult = try await visionService.recognizeText(from: image)
 
             guard !ocrResult.isEmpty else {
-                await MainActor.run {
-                    self.errorMessage = ReceiptError.emptyOCRResult.localizedDescription
-                    self.isProcessing = false
-                }
+                self.errorMessage = ReceiptError.emptyOCRResult.localizedDescription
+                self.isProcessing = false
                 return
             }
 
             let parsed = parser.parse(ocrResult)
 
-            await MainActor.run {
-                self.parsedReceipt = parsed
-                self.merchantName = parsed.merchantName
-                self.totalAmount = "\(parsed.totalAmount)"
-                self.selectedCategory = parsed.category
-                self.receiptDate = parsed.date
-                self.isProcessing = false
-            }
+            self.parsedReceipt = parsed
+            self.merchantName = parsed.merchantName
+            self.totalAmount = "\(parsed.totalAmount)"
+            self.selectedCategory = parsed.category
+            self.receiptDate = parsed.date
+            self.isProcessing = false
         } catch {
-            await MainActor.run {
-                self.errorMessage = error.localizedDescription
-                self.isProcessing = false
-            }
+            self.errorMessage = error.localizedDescription
+            self.isProcessing = false
         }
     }
 
@@ -60,6 +56,13 @@ final class ScannerViewModel {
         guard let parsed = parsedReceipt else { return }
         let amount = Decimal(string: totalAmount) ?? 0
         let imageData = capturedImage?.jpegData(compressionQuality: 0.7)
+
+        // Save to Photos album (fire-and-forget, don't block receipt saving)
+        if let image = capturedImage {
+            Task {
+                try? await photoLibrary.savePhoto(image)
+            }
+        }
 
         // Use ParsedReceipt.toReceipt() — schema-driven conversion
         let receipt = parsed.toReceipt(

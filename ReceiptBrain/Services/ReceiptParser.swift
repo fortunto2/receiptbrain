@@ -10,7 +10,8 @@ struct ReceiptParser {
         let amount = extractTotalAmount(from: ocrResult.lines)
         let currency = detectCurrency(from: ocrResult.lines)
         let date = extractDate(from: ocrResult.lines)
-        let category = guessCategory(merchant: merchant)
+        let category = guessCategory(merchant: merchant, lines: ocrResult.lines)
+        let lineItems = extractLineItems(from: ocrResult.lines)
 
         return ParsedReceipt(
             merchantName: merchant,
@@ -18,48 +19,87 @@ struct ReceiptParser {
             currency: currency,
             date: date,
             category: category,
+            lineItems: lineItems,
             rawText: ocrResult.fullText
         )
     }
 
     // MARK: - Private
 
+    // AICODE-NOTE: Merchant extraction skips address-like lines and prefers UPPER CASE lines near the top
     private func extractMerchant(from lines: [String]) -> String {
-        // First non-empty, non-numeric line is usually the merchant
+        let addressPatterns: [String] = [
+            "st.", "str.", "ave.", "ave ", "blvd", "road", "rd.",
+            "tel:", "tel.", "phone", "fax", "www.", "http",
+            "receipt", "cashier", "register", "terminal",
+        ]
+        let phonePattern = /\+?\d[\d\s\-()]{7,}/
+
+        // First pass: look for an UPPER CASE line in the first 5 lines (common for store names)
+        for line in lines.prefix(5) {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard trimmed.count >= 2 else { continue }
+
+            let letterCount = trimmed.unicodeScalars.filter(CharacterSet.letters.contains).count
+            guard letterCount > trimmed.count / 2 else { continue }
+
+            // Skip address/meta lines
+            let lower = trimmed.lowercased()
+            if addressPatterns.contains(where: { lower.contains($0) }) { continue }
+            if trimmed.firstMatch(of: phonePattern) != nil { continue }
+
+            // Prefer all-caps lines (typical store names)
+            let uppercaseLetters = trimmed.unicodeScalars.filter(CharacterSet.uppercaseLetters.contains).count
+            if uppercaseLetters > letterCount / 2 {
+                return trimmed
+            }
+        }
+
+        // Second pass: first non-empty, non-numeric, non-address line
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmed.isEmpty else { continue }
-            // Skip lines that are mostly numbers/symbols
+
             let letterCount = trimmed.unicodeScalars.filter(CharacterSet.letters.contains).count
-            if letterCount > trimmed.count / 2 {
-                return trimmed
-            }
+            guard letterCount > trimmed.count / 2 else { continue }
+
+            let lower = trimmed.lowercased()
+            if addressPatterns.contains(where: { lower.contains($0) }) { continue }
+            if trimmed.firstMatch(of: phonePattern) != nil { continue }
+
+            return trimmed
         }
         return "Unknown"
     }
 
+    // AICODE-NOTE: Amount regex accepts optional decimal part (e.g. "15" or "15.50" or "15.5")
     private func extractTotalAmount(from lines: [String]) -> Decimal {
-        // Look for "TOTAL", "TOPLAM", "ИТОГО" followed by amount, or largest amount
-        let totalKeywords = ["total", "toplam", "итого", "grand total", "amount due", "balance"]
+        let totalKeywords = [
+            "total", "toplam", "genel toplam", "итого", "всего", "сумма",
+            "grand total", "amount due", "balance", "to pay", "due",
+            "subtotal", "final", "net",
+        ]
         var amounts: [(Decimal, Bool)] = [] // (amount, isNearKeyword)
 
-        let amountPattern = /[\$€₺₽]?\s*(\d{1,6}[.,]\d{2})/
+        // Matches amounts with optional decimal part: $15, $15.50, 15.5, €3,00
+        let amountPattern = /[\$€₺₽£]?\s*(\d{1,6}([.,]\d{1,2})?)/
 
         for line in lines {
             let lower = line.lowercased()
             let isKeywordLine = totalKeywords.contains { lower.contains($0) }
 
-            if let match = lower.firstMatch(of: amountPattern) {
+            for match in lower.matches(of: amountPattern) {
                 let numStr = String(match.1).replacingOccurrences(of: ",", with: ".")
-                if let value = Decimal(string: numStr) {
+                if let value = Decimal(string: numStr), value > 0 {
                     amounts.append((value, isKeywordLine))
                 }
             }
         }
 
-        // Prefer amount near "TOTAL" keyword
-        if let totalLine = amounts.first(where: { $0.1 }) {
-            return totalLine.0
+        // Prefer amount near "TOTAL" keyword — take the largest one on keyword lines
+        let keywordAmounts = amounts.filter(\.1).map(\.0)
+        if let totalAmount = keywordAmounts.max() {
+            return totalAmount
         }
         // Otherwise return the largest amount
         return amounts.map(\.0).max() ?? 0
@@ -101,22 +141,83 @@ struct ReceiptParser {
         return .now
     }
 
-    private func guessCategory(merchant: String) -> ExpenseCategory {
-        let lower = merchant.lowercased()
-        let categoryKeywords: [(ExpenseCategory, [String])] = [
-            (.groceries, ["migros", "bim", "a101", "carrefour", "walmart", "aldi", "lidl", "market", "grocery", "supermarket"]),
-            (.dining, ["restaurant", "cafe", "coffee", "starbucks", "mcdonald", "burger", "pizza", "kebab"]),
-            (.transport, ["uber", "lyft", "taxi", "gas", "fuel", "shell", "bp", "petrol", "parking"]),
-            (.health, ["pharmacy", "apotek", "hospital", "clinic", "doctor"]),
-            (.entertainment, ["cinema", "netflix", "spotify", "theater", "museum"]),
-            (.shopping, ["zara", "h&m", "amazon", "electronics", "ikea"]),
+    // AICODE-NOTE: Line items = lines containing an amount but NOT a total keyword
+    private func extractLineItems(from lines: [String]) -> [String] {
+        let totalKeywords = [
+            "total", "toplam", "genel toplam", "итого", "всего", "сумма",
+            "subtotal", "grand total", "amount due", "balance", "to pay",
+            "tax", "vat", "kdv", "ндс", "change", "cash", "card", "visa", "mastercard",
+        ]
+        let amountPattern = /[\$€₺₽£]?\s*\d{1,6}([.,]\d{1,2})/
+
+        var items: [String] = []
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty else { continue }
+
+            let lower = trimmed.lowercased()
+            // Skip total/payment/tax lines
+            if totalKeywords.contains(where: { lower.contains($0) }) { continue }
+
+            // Must contain an amount to be a line item
+            guard trimmed.firstMatch(of: amountPattern) != nil else { continue }
+
+            // Must have some letters (not just numbers)
+            let letterCount = trimmed.unicodeScalars.filter(CharacterSet.letters.contains).count
+            guard letterCount >= 2 else { continue }
+
+            items.append(trimmed)
+        }
+        return items
+    }
+
+    // AICODE-NOTE: Category detection analyzes merchant name first, then falls back to full receipt text
+    private func guessCategory(merchant: String, lines: [String]) -> ExpenseCategory {
+        // Merchant-specific keywords (high confidence — store name matches)
+        let merchantKeywords: [(ExpenseCategory, [String])] = [
+            (.groceries, ["migros", "bim", "a101", "carrefour", "walmart", "aldi", "lidl", "market", "grocery", "supermarket", "whole foods", "trader joe", "costco", "target"]),
+            (.dining, ["restaurant", "cafe", "coffee", "starbucks", "mcdonald", "burger", "pizza", "kebab", "sushi", "diner", "bistro", "bakery", "bar ", "pub "]),
+            (.transport, ["uber", "lyft", "taxi", "gas", "fuel", "shell", "bp", "petrol", "parking", "metro", "transit"]),
+            (.health, ["pharmacy", "apotek", "hospital", "clinic", "doctor", "eczane", "аптека", "medical"]),
+            (.entertainment, ["cinema", "netflix", "spotify", "theater", "museum", "concert", "game"]),
+            (.shopping, ["zara", "h&m", "amazon", "electronics", "ikea", "nike", "adidas", "uniqlo", "apple store"]),
+            (.utilities, ["electric", "water", "internet", "telecom", "turkcell", "vodafone"]),
+            (.education, ["bookstore", "university", "school", "course", "udemy"]),
         ]
 
-        for (category, keywords) in categoryKeywords {
-            if keywords.contains(where: { lower.contains($0) }) {
+        let lowerMerchant = merchant.lowercased()
+        for (category, keywords) in merchantKeywords {
+            if keywords.contains(where: { lowerMerchant.contains($0) }) {
                 return category
             }
         }
+
+        // Content-based keywords (lower confidence — scan all receipt lines for product hints)
+        let contentKeywords: [(ExpenseCategory, [String])] = [
+            (.groceries, ["milk", "bread", "eggs", "cheese", "chicken", "beef", "fruit", "vegetable", "yogurt", "butter", "rice", "pasta", "ekmek", "süt", "peynir", "молоко", "хлеб", "сыр"]),
+            (.dining, ["latte", "espresso", "cappuccino", "americano", "tea ", "sandwich", "salad", "soup", "dessert", "wine", "beer"]),
+            (.health, ["medicine", "vitamin", "ibuprofen", "paracetamol", "ilaç", "лекарств"]),
+            (.transport, ["gasoline", "diesel", "benzin", "бензин", "litre", "liter", "gallon"]),
+            (.shopping, ["shirt", "pants", "dress", "shoes", "jacket", "size s", "size m", "size l"]),
+        ]
+
+        let fullText = lines.joined(separator: " ").lowercased()
+        var scores: [ExpenseCategory: Int] = [:]
+
+        for (category, keywords) in contentKeywords {
+            let hits = keywords.filter { fullText.contains($0) }.count
+            if hits > 0 {
+                scores[category, default: 0] += hits
+            }
+        }
+
+        if let best = scores.max(by: { $0.value < $1.value }), best.value >= 2 {
+            return best.key
+        }
+        if let best = scores.max(by: { $0.value < $1.value }), best.value >= 1 {
+            return best.key
+        }
+
         return .other
     }
 }

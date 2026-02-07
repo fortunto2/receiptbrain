@@ -10,6 +10,7 @@ struct ParsedReceipt: Sendable {
     let currency: String
     let date: Date
     let category: ExpenseCategory
+    let lineItems: [String]
     let rawText: String
 
     /// Convert to a persisted Receipt model (after user review/edit)

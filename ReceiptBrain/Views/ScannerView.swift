@@ -107,6 +107,15 @@ struct ScannerView: View {
                 }
             }
 
+            if let items = viewModel.parsedReceipt?.lineItems, !items.isEmpty {
+                Section("Items") {
+                    ForEach(items, id: \.self) { item in
+                        Text(item)
+                            .font(.caption.monospaced())
+                    }
+                }
+            }
+
             if let error = viewModel.errorMessage {
                 Section {
                     Text(error).foregroundStyle(.red)

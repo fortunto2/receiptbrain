@@ -1,0 +1,62 @@
+name: ReceiptBrain
+options:
+  bundleIdPrefix: com.receiptbrain
+  deploymentTarget:
+    iOS: "17.0"
+  groupSortPosition: top
+
+settings:
+  SWIFT_VERSION: "6.0"
+  IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+  TARGETED_DEVICE_FAMILY: "1,2"
+
+targets:
+  ReceiptBrain:
+    type: application
+    platform: iOS
+    sources:
+      - path: ReceiptBrain
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.receiptbrain.ReceiptBrain
+        INFOPLIST_FILE: ReceiptBrain/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_PREVIEWS: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_VERSION: "6.0"
+      configs:
+        Debug:
+          SWIFT_OPTIMIZATION_LEVEL: -Onone
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: -O
+    info:
+      path: ReceiptBrain/Info.plist
+      properties:
+        LSRequiresIPhoneOS: true
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations: {}
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSCameraUsageDescription: "ReceiptBrain needs camera access to scan receipts"
+        NSPhotoLibraryUsageDescription: "ReceiptBrain needs photo library access to import receipt images"
+
+  ReceiptBrainTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - ReceiptBrainTests
+    dependencies:
+      - target: ReceiptBrain
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.receiptbrain.ReceiptBrainTests
