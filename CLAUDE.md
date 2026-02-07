@@ -26,20 +26,23 @@ MVVM pattern:
 ReceiptBrain/
   ReceiptBrainApp.swift     # @main, ModelContainer
   ContentView.swift          # TabView (Scanner, Dashboard, History)
-  Models/
-    Receipt.swift            # @Model + ExpenseCategory + PaymentMethod enums
+  Models/                    # ← READ FIRST (SGR: schemas are source of truth)
+    Receipt.swift            # @Model — core aggregate (merchant, amount, date, category)
+    OCRResult.swift          # Value object — typed Vision output (replaces raw [String])
+    ParsedReceipt.swift      # Domain struct — intermediate OCR result + toReceipt() converter
+    ReceiptError.swift       # Domain errors — consolidated error types for pipeline
   Views/
     ScannerView.swift        # Camera/photo capture + review form
     CameraView.swift         # UIImagePickerController wrapper
     DashboardView.swift      # Charts (pie + bar) + spending summary
     HistoryView.swift        # Searchable receipt list with category filters
   ViewModels/
-    ScannerViewModel.swift   # OCR pipeline orchestration
+    ScannerViewModel.swift   # OCR pipeline orchestration (typed: OCRResult → ParsedReceipt)
   Services/
-    VisionService.swift      # VNRecognizeTextRequest actor
-    ReceiptParser.swift      # OCR text → structured receipt data
+    VisionService.swift      # VNRecognizeTextRequest actor → returns OCRResult
+    ReceiptParser.swift      # OCRResult → ParsedReceipt (no domain types defined here)
 ReceiptBrainTests/
-  ReceiptParserTests.swift   # Parser unit tests (Swift Testing)
+  ReceiptParserTests.swift   # Parser + domain model tests (Swift Testing)
 ```
 
 ## Commands
@@ -60,34 +63,51 @@ swiftlint lint
 
 This project follows Schema-Guided Reasoning: **domain models are the source of truth**.
 
-**Read `Models/Receipt.swift` BEFORE any other code.** It defines:
-- `Receipt` (@Model) — core aggregate: merchant, amount, date, category, payment method, OCR text
-- `ExpenseCategory` (enum) — groceries, dining, transport, shopping, utilities, health, entertainment, education, travel, other
-- `PaymentMethod` (enum) — cash, creditCard, debitCard, other
-- `ParsedReceipt` (struct in ReceiptParser.swift) — intermediate OCR result before user review
+**Read `Models/` BEFORE any other code.** It defines the entire domain:
 
-**Rules:**
+| File | Type | Purpose |
+|------|------|---------|
+| `Receipt.swift` | `@Model` | Core aggregate: merchant, amount, date, category, payment method, OCR text |
+| `Receipt.swift` | `ExpenseCategory` enum | Ubiquitous language: groceries, dining, transport, shopping, etc. |
+| `Receipt.swift` | `PaymentMethod` enum | cash, creditCard, debitCard, other |
+| `OCRResult.swift` | `struct` (value object) | Typed Vision output — wraps `[String]` lines, provides `fullText`, `isEmpty` |
+| `ParsedReceipt.swift` | `struct` (domain) | Intermediate OCR result with `toReceipt()` schema-driven converter |
+| `ReceiptError.swift` | `enum` (domain errors) | All pipeline errors: invalidImage, emptyOCRResult, noAmountFound |
+
+### Typed Pipeline
+
+```
+UIImage → VisionService → OCRResult → ReceiptParser → ParsedReceipt → user review → Receipt (@Model) → SwiftData
+```
+
+**No raw strings or untyped data cross service boundaries.** Every step accepts and returns a typed domain model.
+
+### Rules
+
 - New features start with schema changes in `Models/`
 - Enums are the ubiquitous language — add new categories to `ExpenseCategory`, not ad-hoc strings
 - Services accept and return typed models, never raw strings/dicts
-- VisionService → ParsedReceipt → Receipt is a typed pipeline, keep it that way
+- Domain types live ONLY in `Models/` — services contain logic, not type definitions
+- Errors are domain types in `ReceiptError` — don't scatter error enums across services
 
 ## Key Patterns
 
-- **OCR Pipeline:** Camera → VisionService (actor) → ReceiptParser → ParsedReceipt → user review → Receipt (@Model) → SwiftData
-- **VisionService** is an `actor` for thread safety
-- **ReceiptParser** uses regex for amount extraction, keyword matching for categorization
+- **VisionService** is an `actor` → returns `OCRResult` (typed)
+- **ReceiptParser** takes `OCRResult` → returns `ParsedReceipt` (typed)
+- **ParsedReceipt.toReceipt()** converts intermediate → persisted model (schema-driven)
 - **@Query** for reactive SwiftData lists in SwiftUI
 - **@Observable** ViewModel pattern (not ObservableObject)
 
 ## Do
 
+- Read `Models/` BEFORE writing any code
 - Define schemas/models BEFORE writing logic or views
 - Keep all data local (SwiftData, no network calls)
 - Use Swift 6 concurrency (async/await, actors)
 - Use Swift Testing (@Test) for new tests
 - Add AICODE- comments where OCR logic is non-obvious
 - Use enums for categories and types, never raw strings
+- Put ALL domain types in `Models/`, not in service files
 
 ## Don't
 
@@ -96,6 +116,8 @@ This project follows Schema-Guided Reasoning: **domain models are the source of 
 - Don't use ObservableObject (use @Observable instead)
 - Don't hardcode currency (use receipt.currency field)
 - Don't work with untyped data — always go through schemas
+- Don't define domain types outside `Models/` — services only contain logic
+- Don't pass raw `[String]` between components — use `OCRResult`
 
 ## PRD
 

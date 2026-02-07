@@ -1,21 +1,24 @@
 import Foundation
 
-// AICODE-NOTE: Parser extracts amounts via regex, merchant from first non-empty line, date via DateFormatter patterns
+// AICODE-NOTE: Parser accepts OCRResult (typed), returns ParsedReceipt (typed). No raw strings cross service boundaries.
+/// Parses OCR output into structured receipt data.
+/// Part of the typed pipeline: VisionService → OCRResult → **ReceiptParser** → ParsedReceipt
 struct ReceiptParser {
-    /// Parse OCR text lines into structured receipt data
-    func parse(lines: [String]) -> ParsedReceipt {
-        let fullText = lines.joined(separator: "\n")
-        let merchant = extractMerchant(from: lines)
-        let amount = extractTotalAmount(from: lines)
-        let date = extractDate(from: lines)
+    /// Parse typed OCR result into structured receipt data
+    func parse(_ ocrResult: OCRResult) -> ParsedReceipt {
+        let merchant = extractMerchant(from: ocrResult.lines)
+        let amount = extractTotalAmount(from: ocrResult.lines)
+        let currency = detectCurrency(from: ocrResult.lines)
+        let date = extractDate(from: ocrResult.lines)
         let category = guessCategory(merchant: merchant)
 
         return ParsedReceipt(
             merchantName: merchant,
             totalAmount: amount,
+            currency: currency,
             date: date,
             category: category,
-            rawText: fullText
+            rawText: ocrResult.fullText
         )
     }
 
@@ -62,6 +65,19 @@ struct ReceiptParser {
         return amounts.map(\.0).max() ?? 0
     }
 
+    private func detectCurrency(from lines: [String]) -> String {
+        let currencySymbols: [(String, String)] = [
+            ("$", "USD"), ("€", "EUR"), ("₺", "TRY"), ("₽", "RUB"), ("£", "GBP"),
+        ]
+
+        for line in lines {
+            for (symbol, code) in currencySymbols where line.contains(symbol) {
+                return code
+            }
+        }
+        return "USD"
+    }
+
     private func extractDate(from lines: [String]) -> Date {
         let dateFormats = [
             "dd/MM/yyyy", "MM/dd/yyyy", "dd.MM.yyyy",
@@ -103,12 +119,4 @@ struct ReceiptParser {
         }
         return .other
     }
-}
-
-struct ParsedReceipt {
-    let merchantName: String
-    let totalAmount: Decimal
-    let date: Date
-    let category: ExpenseCategory
-    let rawText: String
 }

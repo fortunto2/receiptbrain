@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+// AICODE-NOTE: ViewModel uses typed pipeline: UIImage → OCRResult → ParsedReceipt → Receipt. No raw strings.
 @Observable
 final class ScannerViewModel {
     var selectedPhoto: PhotosPickerItem?
@@ -26,8 +27,18 @@ final class ScannerViewModel {
         capturedImage = image
 
         do {
-            let lines = try await visionService.recognizeText(from: image)
-            let parsed = parser.parse(lines: lines)
+            // Typed pipeline: UIImage → OCRResult → ParsedReceipt
+            let ocrResult = try await visionService.recognizeText(from: image)
+
+            guard !ocrResult.isEmpty else {
+                await MainActor.run {
+                    self.errorMessage = ReceiptError.emptyOCRResult.localizedDescription
+                    self.isProcessing = false
+                }
+                return
+            }
+
+            let parsed = parser.parse(ocrResult)
 
             await MainActor.run {
                 self.parsedReceipt = parsed
@@ -46,17 +57,18 @@ final class ScannerViewModel {
     }
 
     func saveReceipt(context: ModelContext) {
+        guard let parsed = parsedReceipt else { return }
         let amount = Decimal(string: totalAmount) ?? 0
         let imageData = capturedImage?.jpegData(compressionQuality: 0.7)
 
-        let receipt = Receipt(
+        // Use ParsedReceipt.toReceipt() — schema-driven conversion
+        let receipt = parsed.toReceipt(
             merchantName: merchantName,
             totalAmount: amount,
             date: receiptDate,
             category: selectedCategory,
             paymentMethod: selectedPaymentMethod,
-            imageData: imageData,
-            rawOCRText: parsedReceipt?.rawText ?? ""
+            imageData: imageData
         )
 
         context.insert(receipt)

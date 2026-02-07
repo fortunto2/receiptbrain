@@ -1,11 +1,13 @@
 import Vision
 import UIKit
 
-// AICODE-NOTE: VisionKit OCR pipeline — VNRecognizeTextRequest with .accurate level, runs off main thread
+// AICODE-NOTE: VisionService returns OCRResult (typed), not raw [String]. Errors use domain ReceiptError.
+/// Actor for thread-safe OCR. Part of the typed pipeline:
+/// UIImage → **VisionService** → OCRResult → ReceiptParser → ParsedReceipt → Receipt
 actor VisionService {
-    func recognizeText(from image: UIImage) async throws -> [String] {
+    func recognizeText(from image: UIImage) async throws -> OCRResult {
         guard let cgImage = image.cgImage else {
-            throw VisionError.invalidImage
+            throw ReceiptError.invalidImage
         }
 
         let request = VNRecognizeTextRequest()
@@ -17,23 +19,13 @@ actor VisionService {
         try handler.perform([request])
 
         guard let observations = request.results else {
-            return []
+            return OCRResult(lines: [])
         }
 
-        return observations.compactMap { observation in
+        let lines = observations.compactMap { observation in
             observation.topCandidates(1).first?.string
         }
-    }
-}
 
-enum VisionError: Error, LocalizedError {
-    case invalidImage
-    case recognitionFailed
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidImage: "Could not process the image"
-        case .recognitionFailed: "Text recognition failed"
-        }
+        return OCRResult(lines: lines)
     }
 }
