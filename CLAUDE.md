@@ -56,9 +56,25 @@ xcodebuild test -scheme ReceiptBrain -destination 'platform=iOS Simulator,name=i
 swiftlint lint
 ```
 
+## SGR — Schemas First
+
+This project follows Schema-Guided Reasoning: **domain models are the source of truth**.
+
+**Read `Models/Receipt.swift` BEFORE any other code.** It defines:
+- `Receipt` (@Model) — core aggregate: merchant, amount, date, category, payment method, OCR text
+- `ExpenseCategory` (enum) — groceries, dining, transport, shopping, utilities, health, entertainment, education, travel, other
+- `PaymentMethod` (enum) — cash, creditCard, debitCard, other
+- `ParsedReceipt` (struct in ReceiptParser.swift) — intermediate OCR result before user review
+
+**Rules:**
+- New features start with schema changes in `Models/`
+- Enums are the ubiquitous language — add new categories to `ExpenseCategory`, not ad-hoc strings
+- Services accept and return typed models, never raw strings/dicts
+- VisionService → ParsedReceipt → Receipt is a typed pipeline, keep it that way
+
 ## Key Patterns
 
-- **OCR Pipeline:** Camera → VisionService (actor) → ReceiptParser → user review → SwiftData
+- **OCR Pipeline:** Camera → VisionService (actor) → ReceiptParser → ParsedReceipt → user review → Receipt (@Model) → SwiftData
 - **VisionService** is an `actor` for thread safety
 - **ReceiptParser** uses regex for amount extraction, keyword matching for categorization
 - **@Query** for reactive SwiftData lists in SwiftUI
@@ -66,10 +82,12 @@ swiftlint lint
 
 ## Do
 
+- Define schemas/models BEFORE writing logic or views
 - Keep all data local (SwiftData, no network calls)
 - Use Swift 6 concurrency (async/await, actors)
 - Use Swift Testing (@Test) for new tests
 - Add AICODE- comments where OCR logic is non-obvious
+- Use enums for categories and types, never raw strings
 
 ## Don't
 
@@ -77,6 +95,7 @@ swiftlint lint
 - Don't use UIKit directly (wrap in UIViewControllerRepresentable)
 - Don't use ObservableObject (use @Observable instead)
 - Don't hardcode currency (use receipt.currency field)
+- Don't work with untyped data — always go through schemas
 
 ## PRD
 
