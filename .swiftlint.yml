@@ -1,0 +1,16 @@
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+
+excluded:
+  - .build
+  - DerivedData
+  - Package.swift
+
+line_length:
+  warning: 150
+  error: 200
