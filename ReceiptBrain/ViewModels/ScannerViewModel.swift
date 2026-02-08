@@ -22,6 +22,7 @@ final class ScannerViewModel {
 
     private let visionService = VisionService()
     private let parser = ReceiptParser()
+    private let llmParser = LLMParser()
     private let photoLibrary = PhotoLibraryService.shared
 
     func processImage(_ image: UIImage) async {
@@ -30,7 +31,7 @@ final class ScannerViewModel {
         capturedImage = image
 
         do {
-            // Typed pipeline: UIImage → OCRResult → ParsedReceipt
+            // Typed pipeline: UIImage → OCRResult → LLM/Regex → ParsedReceipt
             let ocrResult = try await visionService.recognizeText(from: image)
 
             guard !ocrResult.isEmpty else {
@@ -39,7 +40,8 @@ final class ScannerViewModel {
                 return
             }
 
-            let parsed = parser.parse(ocrResult)
+            // AICODE-NOTE: Use Foundation Models LLM when available, regex fallback otherwise
+            let parsed = await llmParser.parse(ocrResult)
 
             self.parsedReceipt = parsed
             self.merchantName = parsed.merchantName

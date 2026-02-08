@@ -15,6 +15,7 @@
 		0B2C3D4E5F607182A3B4C5D9 /* PDFExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2C3D4E5F607182A3B4C5D8 /* PDFExportService.swift */; };
 		0B2C3D4E5F607182A3B4C5DB /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2C3D4E5F607182A3B4C5DA /* ExportView.swift */; };
 		0B2C3D4E5F607182A3B4C5DD /* merchants.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B2C3D4E5F607182A3B4C5DC /* merchants.json */; };
+		0C3D4E5F60718293A4B5C6D7 /* LLMParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3D4E5F60718293A4B5C6D8 /* LLMParser.swift */; };
 		1454306DF534C83E684D4A33 /* ScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63A2C32F5D499D43BDA4A46 /* ScannerViewModel.swift */; };
 		18F8A382E74541C70152A69A /* VisionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180ACB358916291094C71A4C /* VisionService.swift */; };
 		34DEF0B935CC6C549EE3CB5B /* ReceiptParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABE4A8268DB96FD8FE2F404 /* ReceiptParserTests.swift */; };
@@ -74,6 +75,7 @@
 		0B2C3D4E5F607182A3B4C5D8 /* PDFExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFExportService.swift; sourceTree = "<group>"; };
 		0B2C3D4E5F607182A3B4C5DA /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		0B2C3D4E5F607182A3B4C5DC /* merchants.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = merchants.json; sourceTree = "<group>"; };
+		0C3D4E5F60718293A4B5C6D8 /* LLMParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMParser.swift; sourceTree = "<group>"; };
 		180ACB358916291094C71A4C /* VisionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionService.swift; sourceTree = "<group>"; };
 		2B7ED11D594A858D25AF90CB /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		3A3782D20DF82CDE0DAAC69A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 		31D1309353F667FC41A107BD /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0C3D4E5F60718293A4B5C6D8 /* LLMParser.swift */,
 				0B2C3D4E5F607182A3B4C5D6 /* MerchantDatabase.swift */,
 				0B2C3D4E5F607182A3B4C5D8 /* PDFExportService.swift */,
 				0A1B2C3D4E5F60718293A4B6 /* PhotoLibraryService.swift */,
@@ -340,6 +343,7 @@
 				FEF80DEC1D754C1C351C35D5 /* DashboardView.swift in Sources */,
 				0B2C3D4E5F607182A3B4C5DB /* ExportView.swift in Sources */,
 				C47E0CEFFA0E8DADF012E9AF /* HistoryView.swift in Sources */,
+				0C3D4E5F60718293A4B5C6D7 /* LLMParser.swift in Sources */,
 				0B2C3D4E5F607182A3B4C5D7 /* MerchantDatabase.swift in Sources */,
 				EDF160126980EB6F1B9A6D21 /* OCRResult.swift in Sources */,
 				0B2C3D4E5F607182A3B4C5D9 /* PDFExportService.swift in Sources */,
@@ -443,7 +447,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -506,7 +510,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

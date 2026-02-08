@@ -5,19 +5,18 @@ import PackageDescription
 let package = Package(
     name: "ReceiptBrain",
     platforms: [
-        .iOS(.v17),
+        .iOS(.v18),
+        .macOS(.v13),
     ],
     products: [
         .library(name: "ReceiptBrain", targets: ["ReceiptBrain"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/posthog/posthog-ios.git", from: "3.0.0"),
     ],
     targets: [
         .target(
             name: "ReceiptBrain",
             dependencies: [
-                .product(name: "PostHog", package: "posthog-ios"),
             ],
             path: "ReceiptBrain"
         ),
