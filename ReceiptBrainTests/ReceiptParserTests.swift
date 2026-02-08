@@ -1,4 +1,5 @@
 import Testing
+import Foundation
 @testable import ReceiptBrain
 
 @Suite("Receipt Parser Tests")
@@ -13,7 +14,8 @@ struct ReceiptParserTests {
     @Test("Extracts merchant from first text line")
     func extractMerchant() {
         let result = parser.parse(ocr(["MIGROS", "Istanbul, Turkey", "Item 1   $3.50", "TOTAL   $15.00"]))
-        #expect(result.merchantName == "MIGROS")
+        // MerchantDatabase normalizes "MIGROS" → "Migros"
+        #expect(result.merchantName == "Migros")
     }
 
     @Test("Extracts total amount near TOTAL keyword")
@@ -28,13 +30,13 @@ struct ReceiptParserTests {
         #expect(result.totalAmount == Decimal(string: "12.50"))
     }
 
-    @Test("Categorizes grocery stores correctly")
+    @Test("Categorizes grocery stores correctly via MerchantDB")
     func categorizeGroceries() {
         let result = parser.parse(ocr(["MIGROS", "TOTAL $25.00"]))
         #expect(result.category == .groceries)
     }
 
-    @Test("Categorizes restaurants correctly")
+    @Test("Categorizes restaurants correctly via MerchantDB")
     func categorizeDining() {
         let result = parser.parse(ocr(["STARBUCKS COFFEE", "TOTAL $8.50"]))
         #expect(result.category == .dining)
@@ -88,9 +90,49 @@ struct ReceiptParserTests {
     func parsedToReceipt() {
         let parsed = parser.parse(ocr(["STARBUCKS", "TOTAL $8.50"]))
         let receipt = parsed.toReceipt(paymentMethod: .creditCard)
-        #expect(receipt.merchantName == "STARBUCKS")
+        // MerchantDatabase normalizes "STARBUCKS" → "Starbucks"
+        #expect(receipt.merchantName == "Starbucks")
         #expect(receipt.totalAmount == Decimal(string: "8.50"))
         #expect(receipt.paymentMethod == .creditCard)
         #expect(receipt.category == .dining)
+    }
+
+    // MARK: - Line Items
+
+    @Test("Extracts line items from receipt")
+    func extractLineItems() {
+        let result = parser.parse(ocr([
+            "WALMART",
+            "Milk 2%   $3.99",
+            "Bread     $2.50",
+            "Eggs      $4.29",
+            "SUBTOTAL  $10.78",
+            "TAX       $0.86",
+            "TOTAL     $11.64",
+        ]))
+        #expect(result.lineItems.count >= 2)
+        #expect(result.totalAmount == Decimal(string: "11.64"))
+    }
+
+    @Test("Extracts amounts without decimals")
+    func extractWholeAmounts() {
+        let result = parser.parse(ocr(["SHOP", "Item $15", "TOTAL $15"]))
+        #expect(result.totalAmount == 15)
+    }
+
+    // MARK: - Merchant Database
+
+    @Test("MerchantDB matches known merchants")
+    func merchantDBMatch() {
+        let result = parser.parse(ocr(["WALMART SUPERCENTER", "TOTAL $50.00"]))
+        #expect(result.merchantName == "Walmart")
+        #expect(result.category == .groceries)
+    }
+
+    @Test("MerchantDB handles restaurant aliases")
+    func merchantDBRestaurant() {
+        let result = parser.parse(ocr(["MCDONALDS", "Big Mac $5.99", "TOTAL $5.99"]))
+        #expect(result.merchantName == "McDonald's")
+        #expect(result.category == .dining)
     }
 }

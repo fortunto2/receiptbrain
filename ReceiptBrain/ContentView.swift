@@ -17,6 +17,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("History", systemImage: "clock.fill")
                 }
+
+            ExportView()
+                .tabItem {
+                    Label("Export", systemImage: "doc.text.fill")
+                }
         }
     }
 }

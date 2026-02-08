@@ -58,7 +58,7 @@ struct ScannerView: View {
             Button {
                 showCamera = true
             } label: {
-                Label("Take Photo", systemImage: "camera.fill")
+                Label("Scan Receipt", systemImage: "doc.viewfinder")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)

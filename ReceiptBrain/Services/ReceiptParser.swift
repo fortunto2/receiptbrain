@@ -1,20 +1,28 @@
 import Foundation
+import NaturalLanguage
 
 // AICODE-NOTE: Parser accepts OCRResult (typed), returns ParsedReceipt (typed). No raw strings cross service boundaries.
 /// Parses OCR output into structured receipt data.
 /// Part of the typed pipeline: VisionService → OCRResult → **ReceiptParser** → ParsedReceipt
 struct ReceiptParser {
+    private let merchantDB = MerchantDatabase.shared
+
     /// Parse typed OCR result into structured receipt data
     func parse(_ ocrResult: OCRResult) -> ParsedReceipt {
         let merchant = extractMerchant(from: ocrResult.lines)
         let amount = extractTotalAmount(from: ocrResult.lines)
         let currency = detectCurrency(from: ocrResult.lines)
         let date = extractDate(from: ocrResult.lines)
-        let category = guessCategory(merchant: merchant, lines: ocrResult.lines)
         let lineItems = extractLineItems(from: ocrResult.lines)
 
+        // AICODE-NOTE: Merchant DB match overrides regex-based category detection
+        // Try merchant database first for canonical name + category
+        let dbMatch = merchantDB.match(merchant)
+        let finalMerchant = dbMatch?.canonicalName ?? merchant
+        let category = dbMatch?.category ?? guessCategory(merchant: merchant, lines: ocrResult.lines)
+
         return ParsedReceipt(
-            merchantName: merchant,
+            merchantName: finalMerchant,
             totalAmount: amount,
             currency: currency,
             date: date,
@@ -55,7 +63,11 @@ struct ReceiptParser {
             }
         }
 
-        // Second pass: first non-empty, non-numeric, non-address line
+        // Second pass: use NaturalLanguage NER to find organization names
+        let fullText = lines.prefix(10).joined(separator: "\n")
+        if let org = extractOrganizationName(from: fullText) { return org }
+
+        // Third pass: first non-empty, non-numeric, non-address line
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmed.isEmpty else { continue }
@@ -70,6 +82,28 @@ struct ReceiptParser {
             return trimmed
         }
         return "Unknown"
+    }
+
+    // AICODE-NOTE: NER-based organization name extraction using NaturalLanguage framework
+    private func extractOrganizationName(from text: String) -> String? {
+        let tagger = NLTagger(tagSchemes: [.nameType])
+        tagger.string = text
+        var orgName: String?
+        tagger.enumerateTags(
+            in: text.startIndex..<text.endIndex,
+            unit: .word, scheme: .nameType,
+            options: [.omitWhitespace, .omitPunctuation, .joinNames]
+        ) { tag, range in
+            if tag == .organizationName {
+                let name = String(text[range]).trimmingCharacters(in: .whitespacesAndNewlines)
+                if name.count >= 2 {
+                    orgName = name
+                    return false // stop
+                }
+            }
+            return true
+        }
+        return orgName
     }
 
     // AICODE-NOTE: Amount regex accepts optional decimal part (e.g. "15" or "15.50" or "15.5")

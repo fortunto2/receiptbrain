@@ -4,6 +4,7 @@ struct ReceiptDetailView: View {
     let receipt: Receipt
     @State private var showOCRText = false
     @State private var imageScale: CGFloat = 1.0
+    @State private var showShareSheet = false
 
     var body: some View {
         ScrollView {
@@ -107,6 +108,16 @@ struct ReceiptDetailView: View {
         }
         .navigationTitle("Receipt")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Button {
+                showShareSheet = true
+            } label: {
+                Image(systemName: "square.and.arrow.up")
+            }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ActivityView(items: receipt.shareItems)
+        }
     }
 
     private func detailRow(icon: String, label: String, value: String) -> some View {
@@ -123,4 +134,16 @@ struct ReceiptDetailView: View {
         .padding(.horizontal)
         .padding(.vertical, 12)
     }
+}
+
+// MARK: - UIActivityViewController wrapper
+
+struct ActivityView: UIViewControllerRepresentable {
+    let items: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

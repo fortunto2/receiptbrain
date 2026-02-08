@@ -9,7 +9,12 @@
 /* Begin PBXBuildFile section */
 		039036FEE21F53FBFF8A9A62 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65C5BD3D9AE597501B9F8553 /* Assets.xcassets */; };
 		0A1B2C3D4E5F60718293A4B5 /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F60718293A4B6 /* PhotoLibraryService.swift */; };
+		0A1B2C3D4E5F60718293A4C0 /* SpendingIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F60718293A4C1 /* SpendingIntents.swift */; };
 		0A1B2C3D4E5F60718293A4B7 /* ReceiptDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F60718293A4B8 /* ReceiptDetailView.swift */; };
+		0B2C3D4E5F607182A3B4C5D7 /* MerchantDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2C3D4E5F607182A3B4C5D6 /* MerchantDatabase.swift */; };
+		0B2C3D4E5F607182A3B4C5D9 /* PDFExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2C3D4E5F607182A3B4C5D8 /* PDFExportService.swift */; };
+		0B2C3D4E5F607182A3B4C5DB /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2C3D4E5F607182A3B4C5DA /* ExportView.swift */; };
+		0B2C3D4E5F607182A3B4C5DD /* merchants.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B2C3D4E5F607182A3B4C5DC /* merchants.json */; };
 		1454306DF534C83E684D4A33 /* ScannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63A2C32F5D499D43BDA4A46 /* ScannerViewModel.swift */; };
 		18F8A382E74541C70152A69A /* VisionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180ACB358916291094C71A4C /* VisionService.swift */; };
 		34DEF0B935CC6C549EE3CB5B /* ReceiptParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABE4A8268DB96FD8FE2F404 /* ReceiptParserTests.swift */; };
@@ -24,6 +29,9 @@
 		CB161CF32C28EBC759230979 /* ReceiptBrainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76CF9FFC34E721729091642 /* ReceiptBrainApp.swift */; };
 		EDF160126980EB6F1B9A6D21 /* OCRResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACADC71FE4EF4BCDF8439E7 /* OCRResult.swift */; };
 		FEF80DEC1D754C1C351C35D5 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7914676119325AC0CB4CD7 /* DashboardView.swift */; };
+		1A2B3C4D5E6F70819293A4BF /* ReceiptBrainWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F70819293A4BD /* ReceiptBrainWidget.swift */; };
+		1A2B3C4D5E6F70819293A4C4 /* ReceiptBrainWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F70819293A4B6 /* ReceiptBrainWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1A2B3C4D5E6F70819293A4C6 /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B0134A640321AC35696585 /* Receipt.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,11 +42,38 @@
 			remoteGlobalIDString = 8568086FCFD6ABC258B77DDB;
 			remoteInfo = ReceiptBrain;
 		};
+		1A2B3C4D5E6F70819293A4C2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 801A880ACBCAAB0ADC3D0EF4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A2B3C4D5E6F70819293A4B5;
+			remoteInfo = ReceiptBrainWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1A2B3C4D5E6F70819293A4C3 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1A2B3C4D5E6F70819293A4C4 /* ReceiptBrainWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0A1B2C3D4E5F60718293A4B6 /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F60718293A4B8 /* ReceiptDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptDetailView.swift; sourceTree = "<group>"; };
+		0A1B2C3D4E5F60718293A4B9 /* ReceiptBrain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ReceiptBrain.entitlements; sourceTree = "<group>"; };
+		0A1B2C3D4E5F60718293A4C1 /* SpendingIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingIntents.swift; sourceTree = "<group>"; };
+		0B2C3D4E5F607182A3B4C5D6 /* MerchantDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDatabase.swift; sourceTree = "<group>"; };
+		0B2C3D4E5F607182A3B4C5D8 /* PDFExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFExportService.swift; sourceTree = "<group>"; };
+		0B2C3D4E5F607182A3B4C5DA /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
+		0B2C3D4E5F607182A3B4C5DC /* merchants.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = merchants.json; sourceTree = "<group>"; };
 		180ACB358916291094C71A4C /* VisionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionService.swift; sourceTree = "<group>"; };
 		2B7ED11D594A858D25AF90CB /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		3A3782D20DF82CDE0DAAC69A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -57,12 +92,18 @@
 		C63A2C32F5D499D43BDA4A46 /* ScannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerViewModel.swift; sourceTree = "<group>"; };
 		E76CF9FFC34E721729091642 /* ReceiptBrainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptBrainApp.swift; sourceTree = "<group>"; };
 		F0BF8F37852D150C876386F7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F70819293A4B6 /* ReceiptBrainWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ReceiptBrainWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A2B3C4D5E6F70819293A4BD /* ReceiptBrainWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptBrainWidget.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F70819293A4BE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1A2B3C4D5E6F70819293A4C5 /* ReceiptBrainWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ReceiptBrainWidget.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		31D1309353F667FC41A107BD /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				0B2C3D4E5F607182A3B4C5D6 /* MerchantDatabase.swift */,
+				0B2C3D4E5F607182A3B4C5D8 /* PDFExportService.swift */,
 				0A1B2C3D4E5F60718293A4B6 /* PhotoLibraryService.swift */,
 				6C4D90808616D59F00889AE5 /* ReceiptParser.swift */,
 				180ACB358916291094C71A4C /* VisionService.swift */,
@@ -83,6 +124,7 @@
 			children = (
 				B7467774F35B20E5A06F9774 /* ReceiptBrain.app */,
 				A480C036060B8F0F8AA65F0F /* ReceiptBrainTests.xctest */,
+				1A2B3C4D5E6F70819293A4B6 /* ReceiptBrainWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,16 +137,27 @@
 			path = ReceiptBrainTests;
 			sourceTree = "<group>";
 		};
+		0B2C3D4E5F607182A3B4C5DE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0B2C3D4E5F607182A3B4C5DC /* merchants.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		DDED6E2C309520F0548D06B1 /* ReceiptBrain */ = {
 			isa = PBXGroup;
 			children = (
+				0A1B2C3D4E5F60718293A4C2 /* Intents */,
 				FFDCAFA2618F30D55CCE950C /* Models */,
+				0B2C3D4E5F607182A3B4C5DE /* Resources */,
 				31D1309353F667FC41A107BD /* Services */,
 				33F0B27D430813264D8E917A /* ViewModels */,
 				ED206100320732B5004DBCD3 /* Views */,
 				65C5BD3D9AE597501B9F8553 /* Assets.xcassets */,
 				F0BF8F37852D150C876386F7 /* ContentView.swift */,
 				3A3782D20DF82CDE0DAAC69A /* Info.plist */,
+				0A1B2C3D4E5F60718293A4B9 /* ReceiptBrain.entitlements */,
 				E76CF9FFC34E721729091642 /* ReceiptBrainApp.swift */,
 			);
 			path = ReceiptBrain;
@@ -115,6 +168,7 @@
 			children = (
 				2B7ED11D594A858D25AF90CB /* CameraView.swift */,
 				7C7914676119325AC0CB4CD7 /* DashboardView.swift */,
+				0B2C3D4E5F607182A3B4C5DA /* ExportView.swift */,
 				9744121E44D28D84EEA7A725 /* HistoryView.swift */,
 				0A1B2C3D4E5F60718293A4B8 /* ReceiptDetailView.swift */,
 				656B126F2400C801F31807FE /* ScannerView.swift */,
@@ -122,13 +176,32 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		1A2B3C4D5E6F70819293A4C0 /* ReceiptBrainWidget */ = {
+			isa = PBXGroup;
+			children = (
+				1A2B3C4D5E6F70819293A4BD /* ReceiptBrainWidget.swift */,
+				1A2B3C4D5E6F70819293A4BE /* Info.plist */,
+				1A2B3C4D5E6F70819293A4C5 /* ReceiptBrainWidget.entitlements */,
+			);
+			path = ReceiptBrainWidget;
+			sourceTree = "<group>";
+		};
 		F9553E6F982FF1ACA21DB124 = {
 			isa = PBXGroup;
 			children = (
 				DDED6E2C309520F0548D06B1 /* ReceiptBrain */,
+				1A2B3C4D5E6F70819293A4C0 /* ReceiptBrainWidget */,
 				AC72BCC2A67D4F24F6023497 /* ReceiptBrainTests */,
 				751604D5A2DA9E07D6EE6366 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		0A1B2C3D4E5F60718293A4C2 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				0A1B2C3D4E5F60718293A4C1 /* SpendingIntents.swift */,
+			);
+			path = Intents;
 			sourceTree = "<group>";
 		};
 		FFDCAFA2618F30D55CCE950C /* Models */ = {
@@ -163,16 +236,36 @@
 			productReference = A480C036060B8F0F8AA65F0F /* ReceiptBrainTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		1A2B3C4D5E6F70819293A4B5 /* ReceiptBrainWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A2B3C4D5E6F70819293A4BA /* Build configuration list for PBXNativeTarget "ReceiptBrainWidgetExtension" */;
+			buildPhases = (
+				1A2B3C4D5E6F70819293A4B7 /* Sources */,
+				1A2B3C4D5E6F70819293A4B8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ReceiptBrainWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = ReceiptBrainWidgetExtension;
+			productReference = 1A2B3C4D5E6F70819293A4B6 /* ReceiptBrainWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		8568086FCFD6ABC258B77DDB /* ReceiptBrain */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 374EBCB2B8CABD83510754C7 /* Build configuration list for PBXNativeTarget "ReceiptBrain" */;
 			buildPhases = (
 				F4D28FF7C639C6F61E6BEB59 /* Sources */,
 				477FCF074C5768574210047E /* Resources */,
+				1A2B3C4D5E6F70819293A4C3 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				1A2B3C4D5E6F70819293A4C1 /* PBXTargetDependency */,
 			);
 			name = ReceiptBrain;
 			packageProductDependencies = (
@@ -188,7 +281,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 2620;
 			};
 			buildConfigurationList = 8BD68551BA287B173914AE3D /* Build configuration list for PBXProject "ReceiptBrain" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -204,6 +297,7 @@
 			projectRoot = "";
 			targets = (
 				8568086FCFD6ABC258B77DDB /* ReceiptBrain */,
+				1A2B3C4D5E6F70819293A4B5 /* ReceiptBrainWidgetExtension */,
 				59D459A6154A74D11D918A73 /* ReceiptBrainTests */,
 			);
 		};
@@ -215,6 +309,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				039036FEE21F53FBFF8A9A62 /* Assets.xcassets in Resources */,
+				0B2C3D4E5F607182A3B4C5DD /* merchants.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A2B3C4D5E6F70819293A4B8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,8 +338,11 @@
 				3F5FED6C740DB42F69C1C9B1 /* CameraView.swift in Sources */,
 				367D0984CEEFCBFEBB9AC778 /* ContentView.swift in Sources */,
 				FEF80DEC1D754C1C351C35D5 /* DashboardView.swift in Sources */,
+				0B2C3D4E5F607182A3B4C5DB /* ExportView.swift in Sources */,
 				C47E0CEFFA0E8DADF012E9AF /* HistoryView.swift in Sources */,
+				0B2C3D4E5F607182A3B4C5D7 /* MerchantDatabase.swift in Sources */,
 				EDF160126980EB6F1B9A6D21 /* OCRResult.swift in Sources */,
+				0B2C3D4E5F607182A3B4C5D9 /* PDFExportService.swift in Sources */,
 				0A1B2C3D4E5F60718293A4B5 /* PhotoLibraryService.swift in Sources */,
 				86EC3B7DE025DE128B429AD4 /* ParsedReceipt.swift in Sources */,
 				A9339746943B2E6CD408B40C /* Receipt.swift in Sources */,
@@ -246,8 +351,18 @@
 				72F2F2F2A69FA858637FBA9D /* ReceiptError.swift in Sources */,
 				AE843B5BB8E23710B10DF19E /* ReceiptParser.swift in Sources */,
 				814FF3A1F2F016E63A386052 /* ScannerView.swift in Sources */,
+				0A1B2C3D4E5F60718293A4C0 /* SpendingIntents.swift in Sources */,
 				1454306DF534C83E684D4A33 /* ScannerViewModel.swift in Sources */,
 				18F8A382E74541C70152A69A /* VisionService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1A2B3C4D5E6F70819293A4B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A2B3C4D5E6F70819293A4BF /* ReceiptBrainWidget.swift in Sources */,
+				1A2B3C4D5E6F70819293A4C6 /* Receipt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +373,11 @@
 			isa = PBXTargetDependency;
 			target = 8568086FCFD6ABC258B77DDB /* ReceiptBrain */;
 			targetProxy = FB3758C153F9508A3A06F47A /* PBXContainerItemProxy */;
+		};
+		1A2B3C4D5E6F70819293A4C1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A2B3C4D5E6F70819293A4B5 /* ReceiptBrainWidgetExtension */;
+			targetProxy = 1A2B3C4D5E6F70819293A4C2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -403,6 +523,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ReceiptBrain/ReceiptBrain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 8N495BBBLM;
 				ENABLE_PREVIEWS = YES;
@@ -424,6 +545,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ReceiptBrain/ReceiptBrain.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 8N495BBBLM;
 				ENABLE_PREVIEWS = YES;
@@ -457,6 +579,64 @@
 			};
 			name = Release;
 		};
+		1A2B3C4D5E6F70819293A4BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N495BBBLM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ReceiptBrainWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ReceiptBrainWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.receiptbrain.ReceiptBrain.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1A2B3C4D5E6F70819293A4BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8N495BBBLM;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ReceiptBrainWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ReceiptBrainWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				MARKETING_VERSION = 1.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.receiptbrain.ReceiptBrain.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -483,6 +663,15 @@
 			buildConfigurations = (
 				C7170B291805326B6C5D3A71 /* Debug */,
 				2AFA03FE7C436AC883D70E1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		1A2B3C4D5E6F70819293A4BA /* Build configuration list for PBXNativeTarget "ReceiptBrainWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A2B3C4D5E6F70819293A4BB /* Debug */,
+				1A2B3C4D5E6F70819293A4BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import PhotosUI
+import CoreSpotlight
 
 // AICODE-NOTE: ViewModel uses typed pipeline: UIImage → OCRResult → ParsedReceipt → Receipt. No raw strings.
 @MainActor
@@ -75,7 +76,24 @@ final class ScannerViewModel {
         )
 
         context.insert(receipt)
+        indexInSpotlight(receipt)
         reset()
+    }
+
+    private func indexInSpotlight(_ receipt: Receipt) {
+        let attributes = CSSearchableItemAttributeSet(contentType: .text)
+        attributes.displayName = receipt.merchantName
+        attributes.contentDescription = receipt.shareText
+        if let data = receipt.imageData {
+            attributes.thumbnailData = data
+        }
+
+        let item = CSSearchableItem(
+            uniqueIdentifier: receipt.id.uuidString,
+            domainIdentifier: "com.receiptbrain.receipts",
+            attributeSet: attributes
+        )
+        CSSearchableIndex.default().indexSearchableItems([item])
     }
 
     func reset() {

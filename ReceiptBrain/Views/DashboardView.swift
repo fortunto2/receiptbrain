@@ -57,7 +57,7 @@ struct DashboardView: View {
             } else {
                 Chart(data, id: \.category) { item in
                     SectorMark(
-                        angle: .value("Amount", item.total as NSDecimalNumber),
+                        angle: .value("Amount", (item.total as NSDecimalNumber).doubleValue),
                         innerRadius: .ratio(0.5)
                     )
                     .foregroundStyle(by: .value("Category", item.category.displayName))
@@ -85,7 +85,7 @@ struct DashboardView: View {
                 Chart(data, id: \.weekStart) { item in
                     BarMark(
                         x: .value("Week", item.weekStart, unit: .weekOfYear),
-                        y: .value("Amount", item.total as NSDecimalNumber)
+                        y: .value("Amount", (item.total as NSDecimalNumber).doubleValue)
                     )
                     .foregroundStyle(.blue.gradient)
                 }

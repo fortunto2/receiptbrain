@@ -1,19 +1,21 @@
 import Foundation
 import SwiftData
+import UIKit
 
+// AICODE-NOTE: All properties have defaults — required by CloudKit integration
 @Model
 final class Receipt {
-    @Attribute(.unique) var id: UUID
-    var merchantName: String
-    var totalAmount: Decimal
-    var currency: String
-    var date: Date
-    var category: ExpenseCategory
-    var paymentMethod: PaymentMethod
+    var id: UUID = UUID()
+    var merchantName: String = ""
+    var totalAmount: Decimal = 0
+    var currency: String = "USD"
+    var date: Date = Date.now
+    var category: ExpenseCategory = ExpenseCategory.other
+    var paymentMethod: PaymentMethod = PaymentMethod.cash
     @Attribute(.externalStorage) var imageData: Data?
-    var rawOCRText: String
-    var isManuallyEdited: Bool
-    var createdAt: Date
+    var rawOCRText: String = ""
+    var isManuallyEdited: Bool = false
+    var createdAt: Date = Date.now
 
     init(
         merchantName: String,
@@ -36,6 +38,20 @@ final class Receipt {
         self.rawOCRText = rawOCRText
         self.isManuallyEdited = false
         self.createdAt = .now
+    }
+    var shareText: String {
+        let amount = totalAmount.formatted(.currency(code: currency))
+        let dateStr = date.formatted(.dateTime.month(.abbreviated).day().year())
+        return "\(merchantName) \(amount) (\(dateStr)) — \(category.displayName)"
+    }
+
+    /// Items for UIActivityViewController: photo (if available) + text
+    var shareItems: [Any] {
+        var items: [Any] = [shareText]
+        if let data = imageData, let image = UIImage(data: data) {
+            items.insert(image, at: 0)
+        }
+        return items
     }
 }
 
