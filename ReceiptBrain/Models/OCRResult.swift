@@ -1,6 +1,6 @@
 import Foundation
 
-// AICODE-NOTE: OCRResult is the typed output of VisionService — replaces raw [String] in the pipeline
+// AI-NOTE: OCRResult is the typed output of VisionService — replaces raw [String] in the pipeline
 /// Typed wrapper for Vision OCR output. Part of the typed pipeline:
 /// UIImage → OCRResult → ParsedReceipt → Receipt
 struct OCRResult: Sendable {

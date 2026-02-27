@@ -3,7 +3,7 @@ import SwiftData
 import PhotosUI
 import CoreSpotlight
 
-// AICODE-NOTE: ViewModel uses typed pipeline: UIImage → OCRResult → ParsedReceipt → Receipt. No raw strings.
+// AI-NOTE: ViewModel uses typed pipeline: UIImage → OCRResult → ParsedReceipt → Receipt. No raw strings.
 @MainActor
 @Observable
 final class ScannerViewModel {

@@ -18,6 +18,22 @@ Privacy-first receipt scanner for iOS. Snap a photo, on-device OCR extracts merc
 - **Testing:** Swift Testing + XCTest
 - **Min iOS:** 17.0
 
+## Project Structure
+
+```
+receiptbrain/
+├── Package.swift              # Swift Package (Xcode project)
+├── ReceiptBrain/              # App source
+│   ├── ReceiptBrainApp.swift  # @main, ModelContainer
+│   ├── ContentView.swift      # TabView (Scanner, Dashboard, History)
+│   ├── Models/                # Domain models (read first — SGR)
+│   ├── Views/                 # SwiftUI views
+│   ├── ViewModels/            # @Observable view models
+│   └── Services/              # VisionService, ReceiptParser
+├── ReceiptBrainTests/         # Swift Testing tests
+└── docs/                      # PRD and specs
+```
+
 ## Architecture
 
 MVVM pattern:
@@ -105,7 +121,7 @@ UIImage → VisionService → OCRResult → ReceiptParser → ParsedReceipt → 
 - Keep all data local (SwiftData, no network calls)
 - Use Swift 6 concurrency (async/await, actors)
 - Use Swift Testing (@Test) for new tests
-- Add AICODE- comments where OCR logic is non-obvious
+- Add AI-NOTE/AI-TODO comments where OCR logic is non-obvious
 - Use enums for categories and types, never raw strings
 - Put ALL domain types in `Models/`, not in service files
 

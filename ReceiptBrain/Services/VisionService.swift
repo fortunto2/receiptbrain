@@ -1,7 +1,7 @@
 import Vision
 import UIKit
 
-// AICODE-NOTE: VisionService returns OCRResult (typed), not raw [String]. Errors use domain ReceiptError.
+// AI-NOTE: VisionService returns OCRResult (typed), not raw [String]. Errors use domain ReceiptError.
 /// Actor for thread-safe OCR. Part of the typed pipeline:
 /// UIImage → **VisionService** → OCRResult → ReceiptParser → ParsedReceipt → Receipt
 actor VisionService {

@@ -1,7 +1,7 @@
 import Foundation
 import NaturalLanguage
 
-// AICODE-NOTE: Parser accepts OCRResult (typed), returns ParsedReceipt (typed). No raw strings cross service boundaries.
+// AI-NOTE: Parser accepts OCRResult (typed), returns ParsedReceipt (typed). No raw strings cross service boundaries.
 /// Parses OCR output into structured receipt data.
 /// Part of the typed pipeline: VisionService → OCRResult → **ReceiptParser** → ParsedReceipt
 struct ReceiptParser {
