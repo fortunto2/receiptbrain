@@ -122,11 +122,16 @@ struct ReceiptParser {
             let lower = line.lowercased()
             let isKeywordLine = totalKeywords.contains { lower.contains($0) }
 
+            // A date is not an amount. Without this the year wins the
+            // "largest number" fallback on any receipt priced under ~2000,
+            // which is most receipts in dollars or euros.
+            if Self.looksLikeDate(lower) { continue }
+
             for match in lower.matches(of: amountPattern) {
                 let numStr = String(match.1).replacingOccurrences(of: ",", with: ".")
-                if let value = Decimal(string: numStr), value > 0 {
-                    amounts.append((value, isKeywordLine))
-                }
+                guard let value = Decimal(string: numStr), value > 0 else { continue }
+                if Self.looksLikeYear(numStr) { continue }
+                amounts.append((value, isKeywordLine))
             }
         }
 
@@ -137,6 +142,25 @@ struct ReceiptParser {
         }
         // Otherwise return the largest amount
         return amounts.map(\.0).max() ?? 0
+    }
+
+    /// 19.08.2026, 2026-08-19, 19/08/26 — any line carrying one is a date line,
+    /// and nothing on it should be read as money.
+    private static func looksLikeDate(_ line: String) -> Bool {
+        let patterns: [Regex<AnyRegexOutput>] = [
+            try! Regex(#"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b"#),
+            try! Regex(#"\b\d{4}[./-]\d{1,2}[./-]\d{1,2}\b"#),
+        ]
+        return patterns.contains { line.firstMatch(of: $0) != nil }
+    }
+
+    /// A bare four-digit number in the plausible year range, with no decimal
+    /// part. Real totals of exactly 2026.00 exist but are rare enough that
+    /// losing them beats reporting a year as the total on every other receipt.
+    private static func looksLikeYear(_ numeric: String) -> Bool {
+        guard !numeric.contains("."), numeric.count == 4,
+              let year = Int(numeric) else { return false }
+        return (1990...2100).contains(year)
     }
 
     private func detectCurrency(from lines: [String]) -> String {

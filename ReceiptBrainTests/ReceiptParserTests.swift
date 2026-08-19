@@ -135,4 +135,27 @@ struct ReceiptParserTests {
         #expect(result.merchantName == "McDonald's")
         #expect(result.category == .dining)
     }
+    // MARK: - Dates are not amounts
+
+    /// Regression: the year in the receipt date used to win the "largest
+    /// amount" fallback, so a $12.50 coffee reported as 2026.
+    @Test("Ignores the year in a date when no total keyword is present")
+    func ignoresYearInDate() {
+        let result = parser.parse(ocr(["CAFE", "Latte  5.50", "Cookie 3.00", "19.08.2026 14:32"]))
+        #expect(result.totalAmount == Decimal(string: "5.50"))
+    }
+
+    @Test("Ignores ISO dates too")
+    func ignoresISODate() {
+        let result = parser.parse(ocr(["SHOP", "Item 12.00", "2026-08-19"]))
+        #expect(result.totalAmount == Decimal(string: "12.00"))
+    }
+
+    /// A four-digit price with decimals is still money, not a year.
+    @Test("Keeps a real amount that happens to look like a year")
+    func keepsFourDigitAmount() {
+        let result = parser.parse(ocr(["ELEKTRONIK", "TOPLAM 2026.00"]))
+        #expect(result.totalAmount == Decimal(string: "2026.00"))
+    }
+
 }

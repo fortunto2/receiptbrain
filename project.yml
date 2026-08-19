@@ -60,3 +60,4 @@ targets:
       - target: ReceiptBrain
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.receiptbrain.ReceiptBrainTests
+      GENERATE_INFOPLIST_FILE: YES
