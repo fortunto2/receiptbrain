@@ -28,6 +28,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.receiptbrain.ReceiptBrain
         PROVISIONING_PROFILE_SPECIFIER: ReceiptBrain-App
+        TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Manual
         CODE_SIGN_IDENTITY: "8167B3F8652E51FF78636AE13E6BD5D097AB9B54"
         DEVELOPMENT_TEAM: "8N495BBBLM"
@@ -46,6 +47,8 @@ targets:
     info:
       path: ReceiptBrain/Info.plist
       properties:
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         LSRequiresIPhoneOS: true
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
