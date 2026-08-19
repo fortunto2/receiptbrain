@@ -158,4 +158,19 @@ struct ReceiptParserTests {
         #expect(result.totalAmount == Decimal(string: "2026.00"))
     }
 
+    // MARK: - Currency
+
+    /// Turkish receipts write TL, not ₺ — reading only symbols made every one
+    /// of them come out as dollars.
+    @Test("Reads TL as Turkish lira")
+    func readsTurkishLira() {
+        let result = parser.parse(ocr(["SHELL", "V-POWER 32,40 LT", "TOPLAM 1578,53 TL"]))
+        #expect(result.currency == "TRY")
+    }
+
+    @Test("Symbols still win when present")
+    func symbolWins() {
+        let result = parser.parse(ocr(["CAFE", "TOTAL €12,50"]))
+        #expect(result.currency == "EUR")
+    }
 }

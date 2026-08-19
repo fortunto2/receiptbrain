@@ -164,16 +164,29 @@ struct ReceiptParser {
     }
 
     private func detectCurrency(from lines: [String]) -> String {
-        let currencySymbols: [(String, String)] = [
-            ("$", "USD"), ("€", "EUR"), ("₺", "TRY"), ("₽", "RUB"), ("£", "GBP"),
+        let symbols: [(String, String)] = [
+            ("₺", "TRY"), ("€", "EUR"), ("₽", "RUB"), ("£", "GBP"), ("$", "USD"),
+        ]
+        // Most receipts never print the symbol — Turkish ones write "TL", German
+        // ones "EUR", Russian ones "руб". Reading only symbols is why a Turkish
+        // fuel receipt came out as dollars.
+        let words: [(String, String)] = [
+            ("try", "TRY"), (" tl", "TRY"), ("tl ", "TRY"), ("lira", "TRY"),
+            ("eur", "EUR"), ("usd", "USD"), ("rub", "RUB"), ("руб", "RUB"),
+            ("gbp", "GBP"), ("chf", "CHF"),
         ]
 
         for line in lines {
-            for (symbol, code) in currencySymbols where line.contains(symbol) {
-                return code
-            }
+            for (symbol, code) in symbols where line.contains(symbol) { return code }
         }
-        return "USD"
+        for line in lines {
+            let padded = " " + line.lowercased() + " "
+            for (word, code) in words where padded.contains(word) { return code }
+        }
+
+        // A receipt with no currency marking is almost always from where the
+        // phone is. Defaulting to dollars made every unmarked local receipt wrong.
+        return Locale.current.currency?.identifier ?? "USD"
     }
 
     private func extractDate(from lines: [String]) -> Date {
