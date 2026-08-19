@@ -12,8 +12,8 @@
 	<string>8167B3F8652E51FF78636AE13E6BD5D097AB9B54</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.receiptbrain.ReceiptBrain</key>
-		<string>ReceiptBrain-App</string>
+		<key>co.superduperai.ReceiptBrain</key>
+		<string>ReceiptBrain-Store</string>
 	</dict>
 	<key>uploadSymbols</key>
 	<false/>
