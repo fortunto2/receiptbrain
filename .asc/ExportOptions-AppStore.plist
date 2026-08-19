@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>teamID</key>
+	<string>8N495BBBLM</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>signingCertificate</key>
+	<string>8167B3F8652E51FF78636AE13E6BD5D097AB9B54</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.receiptbrain.ReceiptBrain</key>
+		<string>ReceiptBrain-App</string>
+	</dict>
+	<key>uploadSymbols</key>
+	<false/>
+	<key>stripSwiftSymbols</key>
+	<false/>
+	<key>destination</key>
+	<string>export</string>
+</dict>
+</plist>

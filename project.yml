@@ -7,8 +7,14 @@ options:
 
 settings:
   SWIFT_VERSION: "6.0"
+  DEVELOPMENT_TEAM: "8N495BBBLM"
+  CODE_SIGN_STYLE: Manual
+  # Named by SHA-1: the profile carries the older iPhone Distribution cert, and
+  # by name Xcode picks Apple Distribution and refuses to sign.
+  CODE_SIGN_IDENTITY: "8167B3F8652E51FF78636AE13E6BD5D097AB9B54"
   IPHONEOS_DEPLOYMENT_TARGET: "17.0"
-  TARGETED_DEVICE_FAMILY: "1,2"
+  # iPhone only: the layouts were built and checked at phone width.
+  TARGETED_DEVICE_FAMILY: "1"
 
 targets:
   ReceiptBrain:
@@ -21,6 +27,12 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.receiptbrain.ReceiptBrain
+        PROVISIONING_PROFILE_SPECIFIER: ReceiptBrain-App
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "8167B3F8652E51FF78636AE13E6BD5D097AB9B54"
+        DEVELOPMENT_TEAM: "8N495BBBLM"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: 2
         INFOPLIST_FILE: ReceiptBrain/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_PREVIEWS: YES
@@ -43,13 +55,9 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        UISupportedInterfaceOrientations~ipad:
-          - UIInterfaceOrientationPortrait
-          - UIInterfaceOrientationPortraitUpsideDown
-          - UIInterfaceOrientationLandscapeLeft
-          - UIInterfaceOrientationLandscapeRight
         NSCameraUsageDescription: "ReceiptBrain needs camera access to scan receipts"
         NSPhotoLibraryUsageDescription: "ReceiptBrain needs photo library access to import receipt images"
+        ITSAppUsesNonExemptEncryption: false
 
   ReceiptBrainTests:
     type: bundle.unit-test
