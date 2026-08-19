@@ -1,0 +1,13 @@
+# GitHub Pages serves the privacy policy and the support page — App Review needs
+# both as real URLs, and a public repo hosts them for free.
+title: "ReceiptBrain"
+description: "Receipt scanner for iPhone that works entirely offline. No account, no cloud, no subscription."
+theme: jekyll-theme-minimal
+exclude:
+  - ReceiptBrain
+  - ReceiptBrainTests
+  - ReceiptBrainWidget
+  - ReceiptBrain.xcodeproj
+  - project.yml
+  - Package.swift
+  - .asc
